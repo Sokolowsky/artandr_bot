@@ -1,0 +1,49 @@
+import asyncio
+import os
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import Command
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from dotenv import load_dotenv
+from aiogram.types import InputFile
+
+# Загружаем токен
+load_dotenv(dotenv_path="token.env")
+TOKEN = os.getenv("BOT_TOKEN")
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+
+# Две кнопки в одном ряду (будут большими и равного размера)
+keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Забрать протокол 📄"), KeyboardButton(text="Что это? 🤔")]
+    ]
+)
+
+async def send_video(chat_id:int, video_filename:str, message_key:str):
+    video = FSInputFile(r'C:\Users\nsgor\PycharmProjects\artandr_bot\protocol.mov')
+    text_to_send = message.get()
+
+# /start
+@dp.message(Command("start"))
+async def start_command(message: types.Message):
+    await message.answer("Но как же я здесь оказался?", reply_markup=keyboard)
+
+# "Что это?"
+@dp.message(F.text == "Что это? 🤔")
+async def what_is_it(message: types.Message):
+    with open("protocol.txt", "r", encoding="utf-8") as f:
+        protocol_text = f.read()
+
+        await bot.send_video(chat_id=message.chat.id, video="protocol.mov", caption="132")
+
+# "Забрать протокол"
+@dp.message(F.text == "Забрать протокол 📄")
+async def get_protocol(message: types.Message):
+    await message.answer("Вот твой протокол 📄")
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
